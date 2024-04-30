@@ -25,4 +25,3 @@ download_and_extract_tarball
 prepare_chroot_env
 chroot_gentoo_with_script
 cleanup_and_reboot
-
