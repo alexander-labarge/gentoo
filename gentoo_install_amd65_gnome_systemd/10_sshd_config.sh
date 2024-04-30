@@ -38,8 +38,4 @@ else
     einfo "sshd service was already enabled at boot."
 fi
 
-einfo "Executing SSHD Deployment Script to allow password-less ssh to the Pi Fighters"
-
-/deploy_ssh_keys.sh
-
 /11_gnome_install.sh

@@ -56,7 +56,7 @@ einfo "Early Intel microcode CPIO archive generated."
 # Generate initramfs and kernel with dynamic date in local version string
 CURRENT_DATE=$(date +%Y%m%d) # Get the current date in YYYYMMDD format
 einfo "Generating initramfs and compiling kernel with Genkernel, including today's date ($CURRENT_DATE) in the kernel version..."
-genkernel --kernel-config=/${KERNEL_CONFIG} --kernel-append-localversion=-deathstar-intel-optimized-$CURRENT_DATE --no-mrproper --no-clean --mountboot --microcode initramfs --install all
+genkernel --kernel-config=/${KERNEL_CONFIG} --kernel-append-localversion=-intel-optimized-$CURRENT_DATE --no-mrproper --no-clean --mountboot --microcode initramfs --install all
 einfo "Kernel and initramfs generation complete with date embedded in version."
 
 /7_auto_fstab_gen.sh

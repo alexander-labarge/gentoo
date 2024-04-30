@@ -16,8 +16,8 @@ einfo "Adding LUKS Grub command line entry..."
 countdown_timer
 
 ROOT_UUID=$(blkid -o value -s UUID ${DRIVE}p3)
-echo "GRUB_ENABLE_CRYPTODISK=y" >> /etc/default/grub
-echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${ROOT_UUID}:${LUKS_ROOT_NAME} root=/dev/mapper/${LUKS_ROOT_NAME}\"" >> /etc/default/grub
+# echo "GRUB_ENABLE_CRYPTODISK=y" >> /etc/default/grub
+# echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${ROOT_UUID}:${LUKS_ROOT_NAME} root=/dev/mapper/${LUKS_ROOT_NAME}\"" >> /etc/default/grub
 
 # Install GRUB for x86_64 EFI systems
 grub-install --target=x86_64-efi --efi-directory=/efi --removable

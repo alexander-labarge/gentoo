@@ -55,22 +55,8 @@ fi
 einfo "Creating user '${USERNAME}' with groups users, wheel, video, audio..."
 useradd -m -G users,wheel,video,audio -s /bin/bash ${USERNAME}
 
-SHADOW_FILE="/etc/shadow"
-
-einfo "Updating password hashes in /etc/shadow..."
-
-# Update root's password hash
-sed -i "s|^root:[^:]*|root:${ROOT_HASH}|" "${SHADOW_FILE}"
-
-# Update user's password hash
-sed -i "s|^${USERNAME}:[^:]*|${USERNAME}:${USER_HASH}|" "${SHADOW_FILE}"
-
-einfo "Password hashes updated for root and user: ${USERNAME}}."
-countdown_timer
-
-einfo "Password for both root and ${USERNAME}: 'skywalker'"
-
-countdown_timer
+passwd root
+passwd ${USERNAME}
 
 einfo "System configuration complete."
 

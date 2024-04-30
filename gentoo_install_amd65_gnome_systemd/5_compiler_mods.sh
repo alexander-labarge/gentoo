@@ -62,7 +62,7 @@ echo "MAKEOPTS=\"-j$((NUM_CORES + 1))\"" >> /etc/portage/make.conf
 echo "Applying general system settings..."
 echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf
 echo 'VIDEO_CARDS="nvidia"' >> /etc/portage/make.conf
-echo 'USE="X gtk -kde -qt5 gnome systemd pulseaudio"' >> /etc/portage/make.conf
+echo 'USE="-qt5 -kde X gtk gnome systemd pulseaudio"' >> /etc/portage/make.conf
 echo 'ACCEPT_KEYWORDS="~amd64"' >> /etc/portage/make.conf
 echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 
@@ -71,7 +71,7 @@ cat /etc/portage/make.conf
 
 einfo "All compiler flag updates and USE changes completed."
 einfo "Setting Correct System Profile."
-eselect profile set default/linux/amd64/17.1/desktop/gnome/systemd/merged-usr
+eselect profile set default/linux/amd64/23.0/desktop/gnome/systemd
 einfo "Profile Set to Gnome SystemD Desktop AMD64:"
 #############################################
 #############################################
@@ -85,7 +85,7 @@ countdown_timer
 #############################################
 #############################################
 einfo "Recompiling packages with all changes to get the base system online. This will take some time..."
-emerge --verbose --autounmask-continue=y --update --deep --newuse @world
+emerge --verbose --update --deep --newuse @world
 
 
 

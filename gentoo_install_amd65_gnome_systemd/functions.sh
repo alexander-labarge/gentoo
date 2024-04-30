@@ -2,9 +2,76 @@
 
 set -e
 
+# Function to partition and format a drive
+function format_drives() {
+    clear
+    einfo "This will install a custom Gentoo Linux AMD64 Operating System to $DRIVE and will create the following partition layout:"
+    einfo "1. EFI System Partition: ${EFI_SIZE}B"
+    einfo "2. Linux Swap Partition: ${SWAP_SIZE}B"
+    einfo "3. Linux Root Partition: Remaining space"
+    einfo
+    einfo "WARNING: This operation will destroy all data on $DRIVE."
+
+    if [ ! -b "$DRIVE" ]; then
+      einfo "$DRIVE does not exist or is not a block DRIVE. Operation aborted."
+      exit 1
+    fi
+
+    # Create new partition table and partitions
+    einfo "Creating new partition table and partitions on $DRIVE..."
+
+    # Execute fdisk commands
+    if echo -e "g\nn\n1\n2048\n+${EFI_SIZE}\nt\n1\nn\n2\n\n+${SWAP_SIZE}\nt\n2\n19\nn\n3\n\n\n\nt\n3\n23\nw" | fdisk $DRIVE; then
+      einfo "Partition table and partitions on $DRIVE have been successfully created."
+    else
+      einfo "There was an error creating the partitions. Please check the output for details."
+      exit 1
+    fi
+
+    # Display the final partition table
+    einfo "Final partition table for $DRIVE:"
+    fdisk -l $DRIVE
+
+    einfo "Partitioning complete. Proceeding to format the partitions..."
+
+    countdown_timer
+}
+
 function ensure_mount_point_exists() {
     sudo mkdir -p /mnt/gentoo
 }
+
+function cleanup_and_reboot() {
+    read -p "Do you want to unmount filesystems and cleanup? (y/n) " unmount_answer
+    if [[ ${unmount_answer,,} =~ ^(yes|y)$ ]]; then
+        einfo "Unmounting filesystems..."
+        if umount /mnt/gentoo/efi && umount -l /mnt/gentoo/dev{/shm,/pts,} && umount -R /mnt/gentoo; then
+            einfo "Filesystems unmounted successfully."
+        else
+            echo "Failed to unmount some filesystems."
+            return 1
+        fi
+    else
+        einfo "Skipping unmounting."
+    fi
+
+    read -p "Do you want to reboot now, re-enter chroot, or exit? (reboot/chroot/exit) " action
+    case ${action,,} in
+        reboot )
+            einfo "Rebooting..."
+            reboot
+        ;;
+        chroot )
+            einfo "Re-entering chroot environment..."
+            chroot /mnt/gentoo /bin/bash
+        ;;
+        * )
+            einfo "Exiting without reboot. You can reboot manually later."
+        ;;
+    esac
+    einfo "System cleanup complete."
+}
+
 
 function mount_partition() {
     if [[ "$LUKS_ENCRYPTED" == "YES" ]]; then
@@ -27,6 +94,60 @@ function copy_files_to_target() {
 function change_directory() {
     cd /mnt/gentoo
 }
+
+function chroot_gentoo() {
+    chroot /mnt/gentoo /bin/bash
+}
+
+function chroot_gentoo_with_script() {
+    chroot /mnt/gentoo /bin/bash -c 'source /5_compiler_mods.sh' || {
+        einfo "An error occurred during the chroot execution."
+        exit 1
+    }
+}
+
+function prepare_chroot_env(){
+    mkdir -p /mnt/gentoo/efi
+
+    # Mount the EFI partition
+    einfo "Mounting the EFI partition..."
+    if ! mountpoint -q /mnt/gentoo/efi; then
+        mount $EFI_PARTITION /mnt/gentoo/efi && einfo "$EFI_PARTITION mounted on /mnt/gentoo/efi." || einfo "Failed to mount $EFI_PARTITION."
+    else
+        einfo "$EFI_PARTITION is already mounted."
+    fi
+
+    # Mount the root partition, with LUKS handling if applicable
+    if [[ "$LUKS_ENCRYPTED" == "YES" ]]; then
+        einfo "LUKS encryption detected. Assuming /dev/mapper/${LUKS_ROOT_NAME} is already unlocked and mounted."
+
+    else
+        einfo "Mounting the root partition..."
+        mount $ROOT_PARTITION /mnt/gentoo && einfo "$ROOT_PARTITION mounted on /mnt/gentoo." || einfo "Failed to mount $ROOT_PARTITION."
+    fi
+
+    # Copy DNS settings
+    einfo "Copying DNS settings to the new environment..."
+    cp /etc/resolv.conf /mnt/gentoo/etc && einfo "DNS settings copied." || einfo "Failed to copy DNS settings."
+
+    # Mount necessary filesystems for the chroot environment
+    einfo "Turning Swap Space On..."
+    swapon "$SWAP_PARTITION" && einfo "Swap space turned on." || einfo "Failed to turn on swap space."
+    einfo "Mounting necessary filesystems for the chroot environment..."
+    mount --types proc /proc /mnt/gentoo/proc && einfo "/proc mounted."
+    mount --rbind /sys /mnt/gentoo/sys && mount --make-rslave /mnt/gentoo/sys && einfo "/sys mounted and set as slave."
+    mount --rbind /dev /mnt/gentoo/dev && mount --make-rslave /mnt/gentoo/dev && einfo "/dev mounted and set as slave."
+    mount --rbind /run /mnt/gentoo/run && mount --make-rslave /mnt/gentoo/run && einfo "/run mounted and set as slave."
+}
+
+function display_drive_changes() {
+    einfo "Formatting Filesytems..."
+    einfo "This script will perform the following actions:"
+    einfo "1. Format $EFI_PARTITION as FAT32 for the EFI System Partition."
+    einfo "2. Set up and enable a swap partition on $SWAP_PARTITION."
+    einfo "3. Format $ROOT_PARTITION as ext4 for the root filesystem."
+}
+
 
 function download_and_extract_tarball() {
     STAGE3_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64-desktop-systemd.txt"

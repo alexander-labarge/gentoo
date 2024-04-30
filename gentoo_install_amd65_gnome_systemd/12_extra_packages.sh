@@ -53,9 +53,6 @@ countdown_timer
 
 einfo "Cleaning up Install Environment... Please Wait."
 
-countdown_timer
-
-/13_static_ip_config.sh
 
 einfo "Complete - Exiting Chroot Environment".
 
