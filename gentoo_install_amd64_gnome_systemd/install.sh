@@ -10,6 +10,7 @@ fi
 
 source einfo_util.sh
 source install_config.sh
+source functions.sh
 
 format_drives
 display_drive_changes
