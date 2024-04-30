@@ -53,6 +53,7 @@ countdown_timer
 
 einfo "Cleaning up Install Environment... Please Wait."
 
+unchroot_fix_bashrc
 
 einfo "Complete - Exiting Chroot Environment".
 

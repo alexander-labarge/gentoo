@@ -44,7 +44,6 @@ function ensure_mount_point_exists() {
 function cleanup_and_reboot() {
     read -p "Do you want to unmount filesystems and cleanup? (y/n) " unmount_answer
     if [[ ${unmount_answer,,} =~ ^(yes|y)$ ]]; then
-        unchroot_fix_bashrc
         einfo "Unmounting filesystems..."
         cd ~
         if swapoff $SWAP_PARTITION && umount /mnt/gentoo/efi && umount -l /mnt/gentoo/dev{/shm,/pts,} && umount -R /mnt/gentoo; then
