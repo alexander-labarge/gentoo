@@ -66,6 +66,7 @@ function cleanup_and_reboot() {
         chroot )
             einfo "Re-entering chroot environment..."
             chroot_gentoo
+        ;;
         * )
             einfo "Exiting without reboot. You can reboot manually later."
         ;;
