@@ -23,6 +23,5 @@ change_directory
 download_and_extract_tarball
 prepare_chroot_env
 chroot_gentoo_with_script
-unchroot_fix_bashrc
 cleanup_and_reboot
 
