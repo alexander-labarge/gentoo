@@ -44,8 +44,10 @@ function ensure_mount_point_exists() {
 function cleanup_and_reboot() {
     read -p "Do you want to unmount filesystems and cleanup? (y/n) " unmount_answer
     if [[ ${unmount_answer,,} =~ ^(yes|y)$ ]]; then
+        unchroot_fix_bashrc
         einfo "Unmounting filesystems..."
-        if umount /mnt/gentoo/efi && umount -l /mnt/gentoo/dev{/shm,/pts,} && umount -R /mnt/gentoo; then
+        cd ~
+        if swapoff $SWAP_PARTITION && umount /mnt/gentoo/efi && umount -l /mnt/gentoo/dev{/shm,/pts,} && umount -R /mnt/gentoo; then
             einfo "Filesystems unmounted successfully."
         else
             echo "Failed to unmount some filesystems."
@@ -63,15 +65,13 @@ function cleanup_and_reboot() {
         ;;
         chroot )
             einfo "Re-entering chroot environment..."
-            chroot /mnt/gentoo /bin/bash
-        ;;
+            chroot_gentoo
         * )
             einfo "Exiting without reboot. You can reboot manually later."
         ;;
     esac
     einfo "System cleanup complete."
 }
-
 
 function mount_partition() {
     if [[ "$LUKS_ENCRYPTED" == "YES" ]]; then
@@ -96,7 +96,18 @@ function change_directory() {
 }
 
 function chroot_gentoo() {
-    chroot /mnt/gentoo /bin/bash
+    chroot /mnt/gentoo /bin/bash -c "
+        source /etc/profile
+        echo \"export PS1='(chroot) \[\033[0;31m\]\u\[\033[1;31m\]@\h \[\033[1;34m\]\w \$ \[\033[m\]'\" >> ~/.bashrc
+        exec bash -i
+    "
+}
+
+function unchroot_fix_bashrc() {
+    chroot /mnt/gentoo /bin/bash -c "
+        sed -i '/export PS1/d' ~/.bashrc
+        exec bash -i
+    "
 }
 
 function chroot_gentoo_with_script() {

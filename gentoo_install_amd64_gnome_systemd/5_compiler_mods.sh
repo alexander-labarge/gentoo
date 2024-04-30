@@ -86,7 +86,7 @@ countdown_timer
 #############################################
 einfo "Recompiling packages with all changes to get the base system online. This will take some time..."
 emerge --verbose --update --deep --newuse @world
-
+emerge --depclean
 
 
 einfo "Completed. Proceed to kernel configuration next."
