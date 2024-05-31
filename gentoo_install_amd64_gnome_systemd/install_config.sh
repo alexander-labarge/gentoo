@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DRIVE="/dev/nvme0n1"
-EFI_PARTITION="/dev/nvme0n1p1"
-SWAP_PARTITION="/dev/nvme0n1p2"
-ROOT_PARTITION="/dev/nvme0n1p3"
+DRIVE="/dev/nvme1n1"
+EFI_PARTITION="/dev/nvme1n1p1"
+SWAP_PARTITION="/dev/nvme1n1p2"
+ROOT_PARTITION="/dev/nvme1n1p3"
 EFI_SIZE="1G"
 SWAP_SIZE="32G"
 HOSTNAME="nvidia4090tower"
