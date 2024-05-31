@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 source /einfo_util.sh
 source /install_config.sh
 

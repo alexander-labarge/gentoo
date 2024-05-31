@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 chmod +x /*.sh
 
 source /einfo_util.sh

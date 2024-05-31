@@ -1,6 +1,20 @@
 #!/bin/bash
 # einfo_timer_util.sh
 
+# Define a function to handle errors
+handle_error() {
+  echo "An error occurred in the script at line $1. Do you want to retry? (y/n)"
+  read answer
+  if [[ "$answer" =~ ^[Yy]$ ]] ;then
+    echo "Retrying..."
+  else
+    exit 1
+  fi
+}
+
+# Set the trap to catch errors and pass the line number
+trap 'handle_error $LINENO' ERR
+
 # Define the einfo function for the chroot environment
 function einfo() {
     local blue='\e[1;34m'   # Light blue

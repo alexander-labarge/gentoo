@@ -1,17 +1,11 @@
 #!/bin/bash
 
-set -e
-
-# Check for root privileges
-if [ "$(id -u)" -ne 0 ]; then
-  einfo "This script must be run as root. Please use sudo or switch to root."
-  exit 1
-fi
-
+# Ensure required utilities are sourced
 source einfo_util.sh
 source install_config.sh
 source functions.sh
 
+# Functions for tasks (ensure these functions are defined in the sourced files or here)
 format_drives
 display_drive_changes
 format_efi
