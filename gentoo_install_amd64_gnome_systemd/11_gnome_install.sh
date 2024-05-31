@@ -13,6 +13,8 @@ einfo "Updating System Packages to avoid Circular Builds"
 sleep 2
 emerge --sync
 sleep 2
+einfo "Updating System Packages for Experimental Features with ACCEPT_KEYWORDS set to ~amd64"
+echo 'ACCEPT_KEYWORDS="~amd64"' >> /etc/portage/make.conf
 emerge --changed-use --update --deep @world
 
 einfo "Installing graphical environment and NetworkManager..."

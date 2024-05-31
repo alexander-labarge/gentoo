@@ -65,7 +65,6 @@ echo "Applying general system settings..."
 echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf
 echo 'VIDEO_CARDS="nvidia"' >> /etc/portage/make.conf
 echo 'USE="-qt5 -qt6 -kde X gtk gnome systemd pulseaudio"' >> /etc/portage/make.conf
-echo 'ACCEPT_KEYWORDS="~amd64"' >> /etc/portage/make.conf
 echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 
 # Display the final make.conf to the user
